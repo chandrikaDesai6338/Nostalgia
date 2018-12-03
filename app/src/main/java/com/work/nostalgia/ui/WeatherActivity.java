@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -30,14 +31,14 @@ import io.reactivex.schedulers.Schedulers;
 
 public class WeatherActivity extends AppCompatActivity {
 
-    public static String API_KEY = "b6907d289e10d714a6e88b30761fae22";
+    public static String API_KEY = "d63e6792f6c4080a66cd092f5e114c1e";
     ProgressDialog ringProgressDialog;
     @NonNull
     private RetrofitAPIInterface retrofitAPIInterface;
     WeatherData response;
 
     EditText city;
-    TextView cityText, temp, unitTemp, condDescr;
+    TextView cityText, temp, unitTemp, condDescr, skydescfull;
     ImageView imgView;
     Button weaherBtn;
 
@@ -52,6 +53,7 @@ public class WeatherActivity extends AppCompatActivity {
         condDescr = (TextView) findViewById(R.id.skydesc);
         imgView = (ImageView) findViewById(R.id.condIcon);
         weaherBtn = findViewById(R.id.weaherBtn);
+        skydescfull = findViewById(R.id.skydescfull);
 
 
         //initRetrofit
@@ -99,7 +101,13 @@ public class WeatherActivity extends AppCompatActivity {
                 .subscribe(new DefaultObserver<WeatherData>() {
                     @Override
                     public void onNext(WeatherData response) {
-                        display(response);
+                        if(response.getCod() == 200 ){
+                            display(response);
+                        }
+                        else{
+                            ringProgressDialog.dismiss();
+                            Toast.makeText(WeatherActivity.this,"City not Found!!",Toast.LENGTH_LONG).show();
+                        }
                     }
 
                     @Override
@@ -122,6 +130,7 @@ public class WeatherActivity extends AppCompatActivity {
         unitTemp.setText("°F");
         temp.setText(String.valueOf(response.getMain().getTemp()));
         condDescr.setText(response.getWeather().get(0).getDescription());
+        skydescfull.setText(response.getWeather().get(0).getMain());
         String ImageUrl = "http://openweathermap.org/img/w/"+response.getWeather().get(0).getIcon()+".png";
         RequestOptions options = new RequestOptions()
                 .centerCrop()

@@ -15,17 +15,21 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.work.nostalgia.R;
 import com.work.nostalgia.dbManager.AppDatabase;
 import com.work.nostalgia.dbManager.FeedsDao;
 import com.work.nostalgia.model.FeedModel;
 import com.work.nostalgia.utility.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static com.work.nostalgia.dbManager.AppDatabase.destroyInstance;
 
 public class AddPostActivity extends AppCompatActivity {
 
@@ -75,6 +79,11 @@ public class AddPostActivity extends AppCompatActivity {
     }
 
     private void saveTask() {
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (isValid()) {
             class SaveTask extends AsyncTask<Void, Void, Void> {
 
@@ -88,6 +97,7 @@ public class AddPostActivity extends AppCompatActivity {
                     feed.setDescription(textDesc.getText().toString());
                     feed.setPostedBy(textPostedBy.getText().toString());
                     feed.setTime(currentDateTimeString);
+
                     feed.setFeedimage(utils.getInstance().getBytes(bitmap));
 
                     //Get Database Instance
@@ -102,8 +112,9 @@ public class AddPostActivity extends AppCompatActivity {
                     super.onPostExecute(aVoid);
                     finish();
                     Intent intent = new Intent(AddPostActivity.this, ViewPost.class);
-                    startActivity(intent);
                     Toast.makeText(getApplicationContext(), "Posted", Toast.LENGTH_LONG).show();
+                    destroyInstance();
+                    startActivity(intent);
                 }
             }
 
@@ -143,9 +154,17 @@ public class AddPostActivity extends AppCompatActivity {
         if (requestCode == GALLERY_REQUEST_CODE && resultCode == RESULT_OK) {
             uri = data.getData();
 
-            bitmap =  utils.getInstance().CompressImage(this, uri);
-
-            imageBtn.setImageURI(uri);
+            File file = new File(utils.getInstance().getRealPathFromURI(this, uri));
+            long length = file.length() / 1024;
+            if (length > 700) {
+                Toast.makeText(this, "Please add a image less than 700kb!!", Toast.LENGTH_LONG).show();
+            } else {
+                 //bitmap = utils.getInstance().CompressImage(this, uri);
+                Glide
+                        .with(this)
+                        .load(file)
+                        .into(imageBtn);
+            }
         }
     }
 

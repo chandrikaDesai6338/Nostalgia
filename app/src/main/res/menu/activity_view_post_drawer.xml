@@ -6,11 +6,11 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/weather"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_wb_cloudy_black_24dp"
             android:title="Weather Repot" />
         <item
             android:id="@+id/post"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_supervisor_account_black_24dp"
             android:title="Post Moments" />
 
     </group>

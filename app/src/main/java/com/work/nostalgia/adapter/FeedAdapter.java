@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.work.nostalgia.R;
 import com.work.nostalgia.model.FeedModel;
 import com.work.nostalgia.utility.utils;
@@ -38,7 +39,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedsHolder> {
 viewHolder.name.setText(feeds.get(i).getAuthor());
 viewHolder.timestamp.setText(feeds.get(i).getTime());
 viewHolder.desc.setText(feeds.get(i).getDescription());
-viewHolder.feedImage1.setImageBitmap(utils.getInstance().getImage(feeds.get(i).feedimage));
+        Glide
+                .with(context)
+                .load(utils.getInstance().getImage(feeds.get(i).feedimage))
+                .into(viewHolder.feedImage1);
+
     }
 
     @Override
